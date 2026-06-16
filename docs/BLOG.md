@@ -25,6 +25,10 @@ honest version — the architecture, the design decisions and *why* I made them,
 and especially the **production gotchas that cost me hours and aren't on page one
 of any search**.
 
+If you want to read the module while following along, the public repository is here:
+
+**Repository:** [terraform-proxmox-public](https://github.com/ahmad-knowledge-based/terraform-proxmox-public)
+
 > TL;DR decisions
 > - Provider: **`bpg/proxmox`** (not telmate) — it builds the template from a cloud image in Terraform.
 > - VMs use **`for_each` keyed by name**, never `count`.
@@ -370,3 +374,6 @@ A condensed checklist (full plan in the repo):
 
 If you're running self-hosted infra that's growing into a platform, this is the
 point where clicking stops scaling and code starts paying off.
+
+The full Terraform module, examples, and README are available in the public repo:
+[terraform-proxmox-public](https://github.com/ahmad-knowledge-based/terraform-proxmox-public).
