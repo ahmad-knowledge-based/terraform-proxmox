@@ -298,6 +298,8 @@ This flow confuses everyone, so here it is explicitly. Terraform does **not** wr
 into the VM. It writes a file to the node and sets a pointer; Proxmox assembles the
 media the guest reads at boot:
 
+![Cloud-init vendor-data flow from Terraform to the guest VM](./assets/proxmox-cloud-init-flow.png)
+
 ```mermaid
 flowchart LR
   TF["Terraform / bpg"]
