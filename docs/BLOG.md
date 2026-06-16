@@ -59,6 +59,8 @@ people request VMs from," Terraform is the right call.* That's the
 
 The module does everything end-to-end in one `apply`:
 
+![Terraform and Proxmox architecture](./assets/proxmox-terraform-architecture.png)
+
 ```mermaid
 flowchart LR
   STATE[("Terraform state<br/>S3 · Ceph RadosGW")]
