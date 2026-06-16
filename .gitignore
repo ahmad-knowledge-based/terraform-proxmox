@@ -1,0 +1,77 @@
+# Terraform working directory
+.terraform/
+
+# Terraform state
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+
+# Terraform crash logs
+crash.log
+crash.*.log
+
+# Terraform local override files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Terraform plans and generated outputs
+tfplan*
+*.tfplan
+plan.out
+plan.cache
+*.tfplan.json
+
+# Sensitive Terraform inputs and backend config
+terraform.tfvars
+terraform.tfvars.json
+*.auto.tfvars
+*.auto.tfvars.json
+backend.hcl
+
+# Local Terraform CLI config can contain credentials
+.terraformrc
+terraform.rc
+
+# Keep examples and the dependency lock file versioned
+!.terraform.lock.hcl
+!*.example
+!*.tfvars.example
+!*.hcl.example
+
+# Environment and secret material
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+id_rsa
+id_rsa.*
+id_ed25519
+id_ed25519.*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Local AI/agent instructions
+CLAUDE.md
+AGENTS.md
+.agents/
+.codex/
+.claude/
+
+# Local logs and scratch files
+*.log
+*.tmp
+*.bak

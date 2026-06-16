@@ -1,0 +1,17 @@
+# Copy to backend.hcl and fill in real values. Do NOT commit backend.hcl.
+# Usage: terraform init -backend-config=backend.hcl
+#
+# The Terraform backend block can't read variables/tfvars, so ALL backend values
+# live here (partial configuration). providers.tf keeps only the constant flags.
+
+bucket = "my-terraform-state"
+key    = "proxmox-workloads/terraform.tfstate"
+region = "us-east-1" # dummy signing region; set to the RadosGW zonegroup api_name if you hit SignatureDoesNotMatch
+
+# Ceph RadosGW (S3-compatible)
+endpoints = {
+  s3 = "https://s3.example.com"
+}
+
+access_key = "REPLACE_WITH_RADOSGW_ACCESS_KEY"
+secret_key = "REPLACE_WITH_RADOSGW_SECRET_KEY"

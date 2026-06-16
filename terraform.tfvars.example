@@ -1,0 +1,120 @@
+# Copy to terraform.tfvars and fill in real values. terraform.tfvars is gitignored.
+
+# --- Provider connection ---
+proxmox_endpoint  = "https://pve.example.com:8006/"
+proxmox_api_token = "terraform@pve!tf=00000000-0000-0000-0000-000000000000"
+proxmox_insecure  = true # self-signed cert
+proxmox_node      = "pve"
+
+# --- Tagging ---
+environment = "dev"
+project     = "lab"
+
+# Fallback datastore for disks when NOT building a template / not set per-workload.
+default_datastore = "local-zfs"
+
+# =============================================================================
+# VM TEMPLATE — pick ONE of the two options below.
+# =============================================================================
+
+# Option A: build the template in Terraform (downloads the cloud image).
+template = {
+  name      = "ubuntu-2204-cloudinit"
+  vm_id     = 9000
+  image_url = "https://cloud-images.ubuntu.com/jammy/current/jammy-server-cloudimg-amd64.img"
+  # 'import' content rejects .img — store with a .qcow2 extension (the .img file IS qcow2).
+  image_file_name    = "jammy-server-cloudimg-amd64.qcow2"
+  image_datastore    = "local"     # directory datastore with 'import' content enabled
+  disk_datastore     = "local-zfs" # ZFS pool for the disk
+  disk_size          = 8
+  checksum           = "" # paste SHA256 of the image (recommended)
+  checksum_algorithm = "sha256"
+}
+
+# Option B: clone from a template that ALREADY exists on the node (no download).
+# Leave `template` null (comment it out above) and set the existing template VMID:
+# template             = null
+# vm_clone_template_id = 9000
+
+# --- Cloud-init defaults (VMs) ---
+ci_user = "ubuntu"
+# ci_password   = "change-me" # optional; omit for SSH-key-only login
+ssh_public_keys = ["ssh-ed25519 AAAA... you@host"]
+nameservers     = ["1.1.1.1", "8.8.8.8"]
+search_domain   = "lab.local"
+
+# --- Custom cloud-config snippet (optional) ---
+# Installs qemu-guest-agent + packages via a #cloud-config user-data snippet
+# (uploaded over SSH) instead of the structured user_account. Requires:
+#   - proxmox_ssh below
+#   - the snippet_datastore to have the 'Snippets' content type enabled
+# use_cloud_config  = true
+# snippet_datastore = "local"
+# proxmox_ssh = {
+#   username         = "root"
+#   private_key_file = "~/.ssh/id_ed25519" # PATH only (file() is called in providers.tf); or set agent = true
+#   # node_address   = "10.0.0.2"  # if SSH host differs from the API endpoint host
+# }
+# cloud_config = {
+#   timezone = "Asia/Jakarta"
+#   packages = ["qemu-guest-agent", "net-tools", "curl"]
+#   runcmd   = ["systemctl enable --now qemu-guest-agent"]
+# }
+
+# --- QEMU VM workloads (keyed by VM name) ---
+workloads = {
+  "web-01" = {
+    cores      = 2
+    memory     = 4096
+    disk_size  = 20
+    ip_address = "10.0.0.11/24"
+    gateway    = "10.0.0.1"
+    tags       = ["role-web"]
+    # vm_id    = 111   # optional; auto-assigned if omitted
+  }
+  "db-01" = {
+    cores      = 4
+    memory     = 8192
+    disk_size  = 40
+    ip_address = "10.0.0.21/24"
+    gateway    = "10.0.0.1"
+    tags       = ["role-db"]
+  }
+
+  # Clone from a NON-cloud-init template (ISO-built / converted VM):
+  # set cloud_init = false, omit ip_address (configure networking in-guest /
+  # via the template). disk_datastore steers clone placement (omit = inherit
+  # the template's datastore); disk_size is ignored (inherits template disk).
+  # "legacy-01" = {
+  #   cloud_init     = false
+  #   cores          = 2
+  #   memory         = 4096
+  #   disk_datastore = "local-zfs" # optional clone target; omit to inherit
+  #   tags           = ["role-legacy"]
+  # }
+}
+
+# =============================================================================
+# LXC CONTAINERS (optional) — pick ONE OS-template option if lxc_workloads set.
+# =============================================================================
+
+# Option A: download the vztmpl in Terraform.
+# lxc_template = {
+#   url       = "http://download.proxmox.com/images/system/ubuntu-22.04-standard_22.04-1_amd64.tar.zst"
+#   datastore = "local"
+# }
+
+# Option B: use a vztmpl already present on the node (no download).
+# lxc_template_file_id = "local:vztmpl/ubuntu-22.04-standard_22.04-1_amd64.tar.zst"
+
+# lxc_workloads = {
+#   "ct-dns-01" = {
+#     cores      = 1
+#     memory     = 512
+#     disk_size  = 8
+#     ip_address = "10.0.0.31/24"
+#     gateway    = "10.0.0.1"
+#     tags       = ["role-dns"]
+#     password   = "change-me" # optional if SSH keys are enough
+#   }
+# }
